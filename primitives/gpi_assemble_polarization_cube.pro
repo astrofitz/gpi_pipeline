@@ -89,8 +89,23 @@ function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
   
   ; errors
   badpix = indq GT 0
-  
+
+  ;; get image uncertainty
   im_uncert = gpi_estimate_2d_uncertainty_image(input, *dataset.headersPHU[numfile], *dataset.headersExt[numfile])
+
+  ;; write out temporary data
+  filenm = fxpar(*(DataSet.HeadersPHU[numfile]), 'DATAFILE', count = cdf)
+  if (cdf eq 0) or (strc(filenm) eq 'NONE') or (strc(filenm) eq '') then begin
+    ;; if DATAFILE keyword not present or not valid, then
+    ;; fallback to input filename
+    filenm = dataset.filenames[numfile]
+  endif
+  base_filename = file_basename(gpi_expand_path(filenm))
+  extloc = strpos(base_filename, '.')
+  c_File = strmid(base_filename, 0, extloc)
+  writefits, c_File+'-input.fits', input
+  writefits, c_File+'-im_uncert.fits', im_uncert
+  writefits, c_File+'-badpix.fits', *dataset.currDQ
 
 
   polcube = fltarr(nx, ny, 2)+!values.f_nan
