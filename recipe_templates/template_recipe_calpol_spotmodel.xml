@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <recipe Name="Create Polarization Spot Model" ReductionType="Calibration" ShortName="">
-<!-- recipe written by fitz on vanadium.astro.ucla.edu at 2017-02-23T17:24:26 UTC -->
-<!-- created with the Recipe Editor GUI -->
-<dataset InputDir="${GPI_RAW_DATA_DIR}-Readonly/Campaign/Raw/161010" OutputDir="${GPI_REDUCED_DATA_DIR}/170223">
+<dataset InputDir="" OutputDir="$GPI_REDUCED_DATA_DIR">
 </dataset>
 <primitive name="Subtract Dark Background" CalibrationFile="AUTOMATIC" RequireExactMatch="0" Interpolate="0" Save="0" gpitv="0" />
 <primitive name="Interpolate bad pixels in 2D frame" CalibrationFile="AUTOMATIC" method="all8" Save="0" gpitv="1" negative_bad_thresh="-50" before_and_after="0" usedq="0" />
