@@ -116,15 +116,7 @@ function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
           'PSF': begin
             ; Extract using a fixed saved PSF from the calibration data.
             ; WARNING does not get updated with flexure properly.
-            ; FIXME replace all of this with high res microlens PSF code!
-          
-            ;Original
-            ;            pixvals= polspot_pixvals[wg,ix,iy,pol] ; the 'spot PSF' for that spot
-            ;            pixvals /= total(pixvals)
-            ;
-            ;            polcube[ix, iy, pol] = total(input[spotx,spoty])
-            ;            if keyword_set(mask) then mask[spotx, spoty]=pol+1
-          
+            ; NOTE  want to replace all of this with high res microlens PSF code!
           
             box_rad = 5         ; extraction box half-width
             
@@ -140,7 +132,6 @@ function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
             ;; Reformat the parameters for the mpfit2peak functions
             fact = .35 ; factor for scaling gaussian width (?!)
             p = [0, 1., params[3]*fact, params[4]*fact, params[0]-lowx, params[1]-lowy, params[2]*!dtor]
-;            p = [0, 1., params[3]*fact, params[4]*fact, params[0]-lowx, params[1]-lowy, params[2]*!dtor,params[5]]
             
             ;; Extract out area of interest
             in_box = input[lowx:highx, lowy:highy]
@@ -152,7 +143,6 @@ function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
             ;; Calculate the "distance" U and a gaussian profile for the spot
             u = mpfit2dpeak_u(xx, yy, p, /tilt)
             g = mpfit2dpeak_gauss(xx, yy, p, /tilt)
-;            g= mpfit2dpeak_moffat(xx,yy,p,/tilt)
             
             g /=total(g)
 
@@ -173,22 +163,9 @@ function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
             w_nan=where(~finite(w), ct)
             if ct gt 0 then w[w_nan] = 0.
             
-;            stop
-
             ;; compute weighted sum
             polcube[ix, iy, pol] = total(in_box*w)/total(g*w)
             dqcube[ix,iy,pol] = total(bp_box, /preserve_type)
-
-            ;; debug
-;            if (ix eq 130) and (iy eq 130) then stop
-;            window, 0
-;            imdisp, in_box
-;            window, 1
-;            imdisp, u
-;            test=u
-;            test[where(test gt udist)]=0
-;            window, 2
-;            imdisp, test
 
             
           end
