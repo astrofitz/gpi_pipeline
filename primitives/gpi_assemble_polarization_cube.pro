@@ -30,7 +30,7 @@
 ; PIPELINE COMMENT: Extract 2 perpendicular polarizations from a 2D image.
 ; PIPELINE ARGUMENT: Name="Save" Type="int" Range="[0,1]" Default="0" Desc="1: save output on disk, 0: don't save"
 ; PIPELINE ARGUMENT: Name="gpitv" Type="int" Range="[0,500]" Default="2" Desc="1-500: choose gpitv session for displaying output, 0: no display "
-; PIPELINE ARGUMENT: Name="Method" Type="String" Range="BOX|PSF" Default="BOX" Desc="Method for pol cube reconstruction, simple box or optimal PSF"
+; PIPELINE ARGUMENT: Name="Method" Type="String" Range="BOX|PSF|MODEL" Default="BOX" Desc="Method for pol cube reconstruction, simple box, Gaussian PSF, or forward model"
 ; PIPELINE ORDER: 2.0
 ; PIPELINE CATEGORY: PolarimetricScience, Calibration
 ;
@@ -48,6 +48,7 @@
 ;   2014-02-03  MP: Code and docs cleanup
 ;   2014-07-01 MPF: Modified "PSF" extraction for weighting by a Gaussian
 ;                   and a noise map.
+;   2017-02-22 MPF: Added forward-modeling extraction.
 ;-
 
 function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
@@ -58,7 +59,7 @@ function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
   
   if tag_exist( Modules[thisModuleIndex], "method") then method=strupcase(Modules[thisModuleIndex].method) else method='BOX'
   if method eq '' then method='BOX'
-  if method ne 'BOX' and method ne 'PSF' then return, error("Not a valid method argument name: "+method)
+  if method ne 'BOX' and method ne 'PSF' and method ne 'MODEL' then return, error("Not a valid method argument name: "+method)
   
   
   input=*dataset.currframe
@@ -203,6 +204,12 @@ function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
             dqcube[ix, iy, pol] = total(indq[cenx-boxsize:cenx+boxsize, ceny-boxsize:ceny+boxsize], /preserve_type)
             mask[cenx-boxsize:cenx+boxsize, ceny-boxsize:ceny+boxsize] += pol+1
             residual[cenx-boxsize:cenx+boxsize, ceny-boxsize:ceny+boxsize]=0
+          end
+          'MODEL': begin
+            ;; Extract using forward modeling
+
+            return, error("Not implemented yet!")
+
           end
         endcase
         
