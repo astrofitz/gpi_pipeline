@@ -13,6 +13,7 @@
 ; OUTPUTS: polarization spot model calibration file
 ;
 ; PIPELINE ORDER: 1.9
+; PIPELINE ARGUMENT: Name="CalibrationFile" Type="String" CalFileType="polcal" Default="AUTOMATIC" Desc="Filename of the desired polarization calibration file to be read"
 ; PIPELINE ARGUMENT: Name="Save" Type="int" Range="[0,1]" Default="1"
 ; PIPELINE COMMENT: Generate polarization model file from a flat field image.
 ; PIPELINE CATEGORY: Calibration
@@ -23,46 +24,58 @@
 
 function gpi_generate_polarization_spot_model,  DataSet, Modules, Backbone
 
-primitive_version= '$Id$' ; get version from subversion to store in header history
+primitive_version = '$Id$' ; get version from subversion to store in header history
+calfiletype = 'polcal' ; for loading polcal file, necessary for computing spot model
 @__start_primitive
 
-    im=*(dataset.currframe[0]) 
+  im = *(dataset.currframe[0]) 
+  szim = size(im)
+  indq = *(dataset.currDQ[0])
+  im_std = *(dataset.curruncert[0])
     
-    obstype=backbone->get_keyword('OBSTYPE')
-	ifsfilter=gpi_simplify_keyword_value(backbone->get_keyword('IFSFILT', count=ct))
-	mode=backbone->get_keyword('DISPERSR', count=ct)
+  obstype = backbone -> get_keyword('OBSTYPE')
+  ifsfilter = gpi_simplify_keyword_value(backbone -> get_keyword('IFSFILT', count = ct))
+  mode = backbone -> get_keyword('DISPERSR', count = ct)
 
-    ; verify image is a POL mode FLAT FIELD. 
-    if ~strmatch(mode,'*wollaston*',/fold_case)  then return, error('FAILURE ('+functionName+'): Invalid input -- a POLARIMETRY mode file is required.') 
-    if(~strmatch(obstype,'*arc*',/fold_case)) && (~strmatch(obstype,'*flat*',/fold_case)) then $
+  ;; verify image is a POL mode FLAT FIELD. 
+  if ~strmatch(mode, '*wollaston*', /fold_case) then $
+     return, error('FAILURE ('+functionName+'): Invalid input -- a POLARIMETRY mode file is required.') 
+  if (~strmatch(obstype, '*arc*', /fold_case)) && $
+     (~strmatch(obstype, '*flat*', /fold_case)) then $
         return, error('FAILURE ('+functionName+'): Invalid input -- The OBSTYPE keyword does not mark this data as a FLAT or ARC image.') 
+
+  Backbone -> Log, "Using polarimetry cal file "+c_file, depth = 3
+
+  ;; output filename for model
+  suffix = "-"+strcompress(ifsfilter, /REMOVE_ALL)+'-polspotmodel'
+  fname = file_basename(filename, ".fits")+suffix+'.fits'
+
+  ;; execute Python code for model generation
+  sys = Python.Import('sys')
+  print, sys.path
+  ;; FIXME  start logging?
+  gpi = Python.Import('gpi')
+  void =  gpi.gpi_pipeline_generate_spot_model(c_file, fname, im, indq, im_std)
+  ;; Python.Import, 'gpi'
+  ;; void = gpi_pipeline_generate_spot_model(c_file, fname, im, indq, im_std)
+
+
+  stop
+  return, error("Not implemented yet!")
     
-
-    szim=size(im)
-
-    return, error("Not implemented yet!")
-
-
-
-
-
     
+  ;; Set keywords for outputting files into the Calibrations DB
+  backbone -> set_keyword, "FILETYPE", "Polarimetry Spot Model Cal File"
+  backbone -> set_keyword,  "ISCALIB", "YES", 'This is a reduced calibration file of some type.'
     
-    suffix="-"+strcompress(ifsfilter,/REMOVE_ALL)+'-polspotmodel'
-    fname = file_basename(filename, ".fits")+suffix+'.fits'
-    
-    ; Set keywords for outputting files into the Calibrations DB
-    backbone->set_keyword, "FILETYPE", "Polarimetry Spot Model Cal File"
-    backbone->set_keyword,  "ISCALIB", "YES", 'This is a reduced calibration file of some type.'
-    
-	backbone->set_keyword, "HISTORY", "      ",ext_num=0
-    ;; backbone->set_keyword, "HISTORY", " Pol Calib File Format:",ext_num=0
-    ;; backbone->set_keyword, "HISTORY", "    Axis 1:  pos_x, pos_y, rotangle, width_x, width_y",ext_num=0
-    ;; backbone->set_keyword, "HISTORY", "       rotangle is in degrees, widths in pixels",ext_num=0
-    ;; backbone->set_keyword, "HISTORY", "    Axis 2:  Lenslet X",ext_num=0
-    ;; backbone->set_keyword, "HISTORY", "    Axis 3:  Lenslet Y",ext_num=0
-    ;; backbone->set_keyword, "HISTORY", "    Axis 4:  Polarization ( -- or | ) ",ext_num=0
-	;; backbone->set_keyword, "HISTORY", "      ",ext_num=0
+  backbone -> set_keyword, "HISTORY", "      ", ext_num = 0
+  ;; backbone->set_keyword, "HISTORY", " Pol Calib File Format:",ext_num=0
+  ;; backbone->set_keyword, "HISTORY", "    Axis 1:  pos_x, pos_y, rotangle, width_x, width_y",ext_num=0
+  ;; backbone->set_keyword, "HISTORY", "       rotangle is in degrees, widths in pixels",ext_num=0
+  ;; backbone->set_keyword, "HISTORY", "    Axis 2:  Lenslet X",ext_num=0
+  ;; backbone->set_keyword, "HISTORY", "    Axis 3:  Lenslet Y",ext_num=0
+  ;; backbone->set_keyword, "HISTORY", "    Axis 4:  Polarization ( -- or | ) ",ext_num=0
+  ;; backbone->set_keyword, "HISTORY", "      ",ext_num=0
     
     
     
