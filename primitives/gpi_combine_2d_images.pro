@@ -69,13 +69,15 @@ primitive_version= '$Id$' ; get version from subversion to store in header histo
 		case STRUPCASE(method) of
 		'MEDIAN': begin 
 			combined_im=median(imtab,/DOUBLE,DIMENSION=3) 
+                        combined_sig = stddev(imtab, dimension = 3, /DOUBLE) /sqrt((size(imtab))[3])
 		end
 		'MEAN': begin
 			combined_im=total(imtab,/DOUBLE,3) /((size(imtab))[3])
+                        combined_sig = stddev(imtab, dimension = 3, /DOUBLE) /sqrt((size(imtab))[3])
 		end
 		'SIGMACLIP': begin
 			can_parallelize = ~ LMGR(/runtime)  ; cannot parallelize if you are in runtime compiled IDL
-			combined_im = gpi_sigma_clip_image_stack( imtab, sigma=sigma_cut,parallelize=can_parallelize)
+			combined_im = gpi_sigma_clip_image_stack( imtab, sigma=sigma_cut,parallelize=can_parallelize, combined_sig=combined_sig)
 		end
 		else: begin
 			message,"Invalid combination method '"+method+"' in call to Combine 2D Frames."
@@ -89,12 +91,19 @@ primitive_version= '$Id$' ; get version from subversion to store in header histo
 		message,/info, "Only one frame supplied - can't really combine it with anything..."
 
 		combined_im = imtab[*,*,0]
+		combined_sig = combined_im*0.
 	endelse
 
 
 
 	; store the output into the backbone datastruct
 	*(dataset.currframe)=combined_im
+        if ~ptr_valid(dataset.curruncert) then begin
+          dataset.curruncert = ptr_new(combined_sig, /no_copy)
+          ;; FIXME  how is this pointer ever freed?
+        endif else begin
+          *(dataset.curruncert) = combined_sig
+        endelse
 	dataset.validframecount=1
 
 @__end_primitive
