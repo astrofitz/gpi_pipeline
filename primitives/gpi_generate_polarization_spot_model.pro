@@ -48,16 +48,16 @@ calfiletype = 'polcal' ; for loading polcal file, necessary for computing spot m
 
   ;; output filename for model
   suffix = "-"+strcompress(ifsfilter, /REMOVE_ALL)+'-polspotmodel'
-  fname = file_basename(filename, ".fits")+suffix+'.fits'
+  gzpos = strpos(filename, '.gz', /reverse_search)
+  if (gzpos ge 0) then $
+     fname = file_basename(filename, ".fits.gz")+suffix+'.fits' $
+  else $
+     fname = file_basename(filename, ".fits")+suffix+'.fits'
 
   ;; execute Python code for model generation
-  sys = Python.Import('sys')
-  print, sys.path
   ;; FIXME  start logging?
   gpi = Python.Import('gpi')
   void =  gpi.gpi_pipeline_generate_spot_model(c_file, fname, im, indq, im_std)
-  ;; Python.Import, 'gpi'
-  ;; void = gpi_pipeline_generate_spot_model(c_file, fname, im, indq, im_std)
 
 
   stop
