@@ -49,8 +49,17 @@ calfiletype = 'polcal' ; for loading polcal file, necessary for computing spot m
   ;; output filename for model
   suffix = "-"+strcompress(ifsfilter, /REMOVE_ALL)+'-polspotmodel'
 
+  ;; start Python logging
+  logging = Python.Import('logging')
+  level = 10;logging.DEBUG
+  format = '%(asctime)s %(name)-12s: %(levelname)-8s %(message)s'
+  void = logging.basicConfig(format = format)
+  logger = logging.getLogger()
+  setLevel = Python.getattr(logger, 'setLevel')
+  ;void = setLevel(10);level)
+
+
   ;; execute Python code for model generation
-  ;; FIXME  start logging?
   gpi = Python.Import('gpi')
   output = gpi.gpi_pipeline_generate_spot_model(c_file, im, indq, im_std)
   offsets = output[0]
