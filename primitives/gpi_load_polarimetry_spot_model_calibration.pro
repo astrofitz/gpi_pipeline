@@ -49,7 +49,7 @@ calfiletype = 'polspotmodel'
 	Backbone->Log, "Loading polarimetry spot model zernike",depth = 3
 	polspotmodel_zernikes = readfits(c_File, ext=numext,/silent)
 	
-	polspotmodel={iffsets:polspotmodel_offsets, other:polspotmodel_other, zernikes:polspotmodel_zernikes, filename:c_File}
+	polspotmodel={offsets:polspotmodel_offsets, other:polspotmodel_other, zernikes:polspotmodel_zernikes, filename:c_File}
 
     ;endif
 
