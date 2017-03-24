@@ -660,6 +660,7 @@ FUNCTION gpiPipelineBackbone::Reduce
 		mlens_file,$		; microlens psf calibration variables
 		mlens,$			;
 		polcal, $
+		polspotmodel, $
 		tilt, $
 		badpixmap, $
 		filter, $
