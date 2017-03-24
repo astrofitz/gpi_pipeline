@@ -48,27 +48,22 @@ calfiletype = 'polcal' ; for loading polcal file, necessary for computing spot m
 
   ;; output filename for model
   suffix = "-"+strcompress(ifsfilter, /REMOVE_ALL)+'-polspotmodel'
-  gzpos = strpos(filename, '.gz', /reverse_search)
-  if (gzpos ge 0) then $
-     fname = file_basename(filename, ".fits.gz")+suffix+'.fits' $
-  else $
-     fname = file_basename(filename, ".fits")+suffix+'.fits'
 
   ;; execute Python code for model generation
   ;; FIXME  start logging?
   gpi = Python.Import('gpi')
-  void =  gpi.gpi_pipeline_generate_spot_model(c_file, fname, im, indq, im_std)
+  output = gpi.gpi_pipeline_generate_spot_model(c_file, im, indq, im_std)
+  offsets = output[0]
+  other = output[1]
+  zernikes = output[2]
 
 
-  stop
-  return, error("Not implemented yet!")
-    
-    
   ;; Set keywords for outputting files into the Calibrations DB
   backbone -> set_keyword, "FILETYPE", "Polarimetry Spot Model Cal File"
   backbone -> set_keyword,  "ISCALIB", "YES", 'This is a reduced calibration file of some type.'
     
   backbone -> set_keyword, "HISTORY", "      ", ext_num = 0
+  ;; FIXME  descriptive history
   ;; backbone->set_keyword, "HISTORY", " Pol Calib File Format:",ext_num=0
   ;; backbone->set_keyword, "HISTORY", "    Axis 1:  pos_x, pos_y, rotangle, width_x, width_y",ext_num=0
   ;; backbone->set_keyword, "HISTORY", "       rotangle is in degrees, widths in pixels",ext_num=0
@@ -87,19 +82,19 @@ calfiletype = 'polcal' ; for loading polcal file, necessary for computing spot m
 ; we can't use the standardized template end-of-procedure file saving code here.
 ; Instead do it this way: 
 
-        ;; TEMP
-;; if ( Modules[thisModuleIndex].Save eq 1 ) then begin
-;; 	b_Stat = save_currdata( DataSet,  Modules[thisModuleIndex].OutputDir, suffix, display=0 ,$
-;; 		   savedata=spotpos,  output_filename=out_filename)
-;;     if ( b_Stat ne OK ) then  return, error ('FAILURE ('+functionName+'): Failed to save dataset.')
 
-;;     writefits, out_filename, spotpos_pixels, /append
-;;     writefits, out_filename, spotpos_pixvals, /append
-;; end
+  if ( Modules[thisModuleIndex].Save eq 1 ) then begin
+    b_Stat = save_currdata( DataSet,  Modules[thisModuleIndex].OutputDir, suffix, display = 0, $
+                            savedata = offsets,  output_filename = out_filename)
+    if ( b_Stat ne OK ) then  return, error ('FAILURE ('+functionName+'): Failed to save dataset.')
 
-;; *(dataset.currframe[0])=spotpos
-;; if tag_exist( Modules[thisModuleIndex], "stopidl") then if keyword_set( Modules[thisModuleIndex].stopidl) then stop
+    writefits, out_filename, other, /append
+    writefits, out_filename, zernikes, /append
+  endif
 
-return, ok
+  *(dataset.currframe[0]) = offsets
+  if tag_exist( Modules[thisModuleIndex], "stopidl") then if keyword_set( Modules[thisModuleIndex].stopidl) then stop
+
+  return, ok
 
 end
