@@ -183,8 +183,22 @@ function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
             residual[cenx-boxsize:cenx+boxsize, ceny-boxsize:ceny+boxsize]=0
           end
           'MODEL': begin
-            ;; Extract using forward modeling
+            ;; turn on logging
+            logging = Python.Import('logging')
+            level = 10;logging.DEBUG
+            format = '%(asctime)s %(name)-12s: %(levelname)-8s %(message)s'
+            void = logging.basicConfig(format = format)
+            logger = logging.getLogger()
+            setLevel = Python.getattr(logger, 'setLevel')
+            ;void = setLevel(10);level)
 
+            ;; Extract using forward modeling
+            gpi = Python.Import('gpi')
+            output = gpi.gpi_pipeline_extract(input, im_uncert^2, badpix, polspotmodel.offsets, polspotmodel.other, polspotmodel.zernikes)
+            polcube = output[0]
+            dqcube = output[1]
+
+            stop
             return, error("Not implemented yet!")
 
           end
