@@ -118,8 +118,6 @@ function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
     polcube = output[0]
     dqcube = output[1]
 
-    stop
-    return, error("Not implemented yet!")
   endif else begin              ; BOX or PSF
     indices, input, xx, yy
     ;;  Extract the data to a datacube
