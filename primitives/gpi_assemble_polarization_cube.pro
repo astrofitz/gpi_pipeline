@@ -194,7 +194,7 @@ function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
 
             ;; Extract using forward modeling
             gpi = Python.Import('gpi')
-            output = gpi.gpi_pipeline_extract(input, im_uncert^2, badpix, polspotmodel.offsets, polspotmodel.other, polspotmodel.zernikes)
+            output = gpi.gpi_pipeline_extract(input, im_uncert^2, indq, polspotmodel.offsets, polspotmodel.other, polspotmodel.zernikes, polcal.filename)
             polcube = output[0]
             dqcube = output[1]
 
