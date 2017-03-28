@@ -51,13 +51,9 @@ calfiletype = 'polcal' ; for loading polcal file, necessary for computing spot m
 
   ;; start Python logging
   logging = Python.Import('logging')
-  level = 10;logging.DEBUG
   format = '%(asctime)s %(name)-12s: %(levelname)-8s %(message)s'
   void = logging.basicConfig(format = format)
-  logger = logging.getLogger()
-  setLevel = Python.getattr(logger, 'setLevel')
-  ;void = setLevel(10);level)
-
+  Python.Run, 'logging.getLogger().setLevel(logging.DEBUG)'
 
   ;; execute Python code for model generation
   gpi = Python.Import('gpi')
