@@ -107,7 +107,8 @@ function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
     logging = Python.Import('logging')
     format = '%(asctime)s %(name)-12s: %(levelname)-8s %(message)s'
     void = logging.basicConfig(format = format)
-    Python.Run, 'logging.getLogger().setLevel(logging.DEBUG)'
+    ;; Python.Run, 'logging.getLogger().setLevel(logging.DEBUG)'
+    Python.Run, 'logging.getLogger().setLevel(logging.INFO)'
 
     ;; Extract using forward modeling
     gpi = Python.Import('gpi')
