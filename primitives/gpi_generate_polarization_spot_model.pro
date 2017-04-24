@@ -31,7 +31,9 @@ calfiletype = 'polcal' ; for loading polcal file, necessary for computing spot m
   im = *(dataset.currframe[0]) 
   szim = size(im)
   indq = *(dataset.currDQ[0])
-  im_std = *(dataset.curruncert[0])
+  ;im_std = *(dataset.curruncert[0])
+  ;; NOTE  uncertainty is not set in dataset at this point ...
+  im_std = gpi_estimate_2d_uncertainty_image(im, *dataset.headersPHU[0], *dataset.headersExt[0])
     
   obstype = backbone -> get_keyword('OBSTYPE')
   ifsfilter = gpi_simplify_keyword_value(backbone -> get_keyword('IFSFILT', count = ct))
@@ -45,6 +47,7 @@ calfiletype = 'polcal' ; for loading polcal file, necessary for computing spot m
         return, error('FAILURE ('+functionName+'): Invalid input -- The OBSTYPE keyword does not mark this data as a FLAT or ARC image.') 
 
   Backbone -> Log, "Using polarimetry cal file "+c_file, depth = 3
+  Backbone -> set_keyword, "HISTORY", "Using polarimetry cal file "+c_file, ext_num = 0
 
   ;; output filename for model
   suffix = "-"+strcompress(ifsfilter, /REMOVE_ALL)+'-polspotmodel'
