@@ -19,6 +19,7 @@
 ;   2009-07-22 MDP: started
 ;   2009-09-17 JM: added DRF parameters
 ;   2013-08, 2013-10 MDP: Minor code formatting cleanup
+;   2017-07-20 mpf: started uncertainty handling
 ;-
 
 Function gpi_accumulate_images, DataSet, Modules, Backbone
@@ -45,7 +46,9 @@ Function gpi_accumulate_images, DataSet, Modules, Backbone
       if ptr_valid(dataset.currdq) eq 1 then begin 
         *(dataset.qualframes[numfile]) = *dataset.currdq  
       endif
-      ;; FIXME  uncertainty
+      if ptr_valid(dataset.curruncert) eq 1 then begin
+        *(dataset.uncertframes[numfile]) = *dataset.curruncert
+      endif
     
       backbone -> Log, "	Accumulated file "+strc(numfile)+" in memory."
 
