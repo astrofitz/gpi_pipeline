@@ -31,9 +31,9 @@ calfiletype = 'polcal' ; for loading polcal file, necessary for computing spot m
   im = *(dataset.currframe[0]) 
   szim = size(im)
   indq = *(dataset.currDQ[0])
-  ;im_std = *(dataset.curruncert[0])
+  im_std = *(dataset.curruncert[0])
   ;; NOTE  uncertainty is not set in dataset at this point ...
-  im_std = gpi_estimate_2d_uncertainty_image(im, *dataset.headersPHU[0], *dataset.headersExt[0])
+  ;im_std = gpi_estimate_2d_uncertainty_image(im, *dataset.headersPHU[0], *dataset.headersExt[0])
     
   obstype = backbone -> get_keyword('OBSTYPE')
   ifsfilter = gpi_simplify_keyword_value(backbone -> get_keyword('IFSFILT', count = ct))
