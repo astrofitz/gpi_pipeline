@@ -2,6 +2,7 @@
 <recipe Name="Create Polarization Spot Model" ReductionType="Calibration" ShortName="">
 <dataset InputDir="" OutputDir="$GPI_REDUCED_DATA_DIR">
 </dataset>
+<primitive name="Estimate 2d uncertainty image" />
 <primitive name="Subtract Dark Background" CalibrationFile="AUTOMATIC" RequireExactMatch="0" Interpolate="0" Save="0" gpitv="0" />
 <primitive name="Interpolate bad pixels in 2D frame" CalibrationFile="AUTOMATIC" method="all8" Save="0" gpitv="1" negative_bad_thresh="-50" before_and_after="0" usedq="0" />
 <primitive name="Accumulate Images" Method="InMemory" />
