@@ -44,7 +44,8 @@ Function gpi_accumulate_images, DataSet, Modules, Backbone
       *(dataset.frames[numfile]) = *dataset.currframe
       if ptr_valid(dataset.currdq) eq 1 then begin 
         *(dataset.qualframes[numfile]) = *dataset.currdq  
-      endif  
+      endif
+      ;; FIXME  uncertainty
     
       backbone -> Log, "	Accumulated file "+strc(numfile)+" in memory."
 
@@ -58,6 +59,7 @@ Function gpi_accumulate_images, DataSet, Modules, Backbone
         b_Stat = save_currdata( DataSet,  Modules[thisModuleIndex].OutputDir, suffix, display = 0)
         if ( b_Stat ne OK ) then  return, error ('FAILURE ('+functionName+'): Failed to save dataset.')
       endif
+      ;; FIXME dq and uncertainty?
 
       *(dataset.frames[numfile]) = dataset.outputFileNames[numfile]	
       backbone -> Log, "Saved file "+strc(numfile)+" to disk."
