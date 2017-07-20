@@ -1,10 +1,10 @@
 ;+
 ; NAME: gpi_estimate_2d_uncertainty
-; PIPELINE PRIMITIVE DESCRIPTION: Estimates the 2d uncertainty in the detector.
+; PIPELINE PRIMITIVE DESCRIPTION: Estimate 2d uncertainty image
 ;
 ; OUTPUTS: The data is modified in memory to add the uncertainty. The file on disk is NOT changed. 
 ;
-; PIPELINE COMMENT: Estimate 2d uncertainty image.
+; PIPELINE COMMENT: Estimate the 2d uncertainty image.
 ; PIPELINE ORDER: 0.1
 ; PIPELINE CATEGORY: Calibration
 ;
