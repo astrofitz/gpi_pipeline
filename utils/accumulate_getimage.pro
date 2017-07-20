@@ -20,9 +20,10 @@
 ; 	Began 2009-07-22 17:12:00 by Marshall Perrin 
 ;   2011-07-30 MP: Updated for multi-extension FITS
 ;   2013-11-05 - ds - Added support for single slice return
+;   2017-07-20 - mpf - Started support for uncertainty frames
 ;-
 
-FUNCTION accumulate_getimage, dataset, index, hdr, hdrext=hdrext, slice=slice, dqframe=dqframe, dqhdr=dqhdr
+FUNCTION accumulate_getimage, dataset, index, hdr, hdrext=hdrext, slice=slice, dqframe=dqframe, dqhdr=dqhdr, uncertframe=uncertframe, uncerthdr=uncerthdr
   common PIP
   common APP_CONSTANTS
 
@@ -44,7 +45,10 @@ FUNCTION accumulate_getimage, dataset, index, hdr, hdrext=hdrext, slice=slice, d
            hdrext = headfits(dataset.inputdir + path_sep() + *(dataset.filenames[index]), exten=1, /silent)
         endelse
         if n_elements(slice) ne 0 then return, image[*,*,slice] else return, image
-     end
+
+        ;; FIXME  dq, uncert?
+
+      end
 
      ;; Option 2:  image was stored on disk, so read it in and return it
      "STRING": begin
@@ -59,20 +63,31 @@ FUNCTION accumulate_getimage, dataset, index, hdr, hdrext=hdrext, slice=slice, d
         endelse  
         
         if n_elements(slice) ne 0 then return, image[*,*,slice] else return, image
-     end
+
+        ;; FIXME  dq, uncert?
+
+      end
 
      ;; Option 3: image was kept in memory so just hand that back.
      else :begin
 
-        hdr =   *(dataset.headersPHU[index])
-        hdrext =  *(dataset.headersExt[index])  
+        hdr = *(dataset.headersPHU[index])
+        hdrext = *(dataset.headersExt[index])
         
-        if ptr_valid(dataset.currdq) eq 1 then begin 
-          dqframe =   *(dataset.qualframes[index])
+        if ptr_valid(dataset.currdq) eq 1 then begin
+          dqframe = *(dataset.qualframes[index])
           dqhdr =  *(dataset.headersDQ[index])
         endif else begin
           dqframe = -1
           dqhdr = -1
+        endelse
+
+        if ptr_valid(dataset.curruncert) eq 1 then begin
+          uncertframe = *(dataset.uncertframes[index])
+          uncerthdr =  *(dataset.headersUncert[index])
+        endif else begin
+          uncertframe = -1
+          uncerthdr = -1
         endelse
         
         if n_elements(slice) ne 0 then return,(*(dataset.frames[index]))[*,*,slice] else  return, *(dataset.frames[index])
