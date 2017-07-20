@@ -91,7 +91,10 @@ primitive_version= '$Id$' ; get version from subversion to store in header histo
 		message,/info, "Only one frame supplied - can't really combine it with anything..."
 
 		combined_im = imtab[*,*,0]
-		combined_sig = combined_im*0.
+                if ~ptr_valid(dataset.curruncert) then $
+                   combined_sig = combined_im*0. $
+                else $
+                   combined_sig = *(dataset.curruncert)
 	endelse
 
 
