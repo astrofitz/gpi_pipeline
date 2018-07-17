@@ -61,9 +61,12 @@ calfiletype = 'polcal' ; for loading polcal file, necessary for computing spot m
   ;; execute Python code for model generation
   gpi = Python.Import('gpi')
   output = gpi.gpi_pipeline_generate_spot_model(c_file, im, indq, im_std)
-  offsets = output[0]
-  other = output[1]
-  zernikes = output[2]
+  offsets_flat = output[0]
+  offsets = REFORM(offsets_flat, [2,2,11])
+  other_flat = output[1]
+  other = REFORM(other_flat, [1,2,11])
+  zernikes_flat = output[2]
+  zernikes = REFORM(zernikes_flat, [7,2,11])
 
 
   ;; Set keywords for outputting files into the Calibrations DB
