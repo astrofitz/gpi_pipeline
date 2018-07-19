@@ -6,7 +6,7 @@
 ;
 ; PIPELINE COMMENT: Estimate the 2d uncertainty image.
 ; PIPELINE ORDER: 0.1
-; PIPELINE CATEGORY: Calibration
+; PIPELINE CATEGORY: ALL
 ;
 ; HISTORY:
 ;  2017-07-20  MPF  started
