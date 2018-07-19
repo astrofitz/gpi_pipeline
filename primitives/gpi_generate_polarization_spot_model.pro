@@ -62,12 +62,12 @@ calfiletype = 'polcal' ; for loading polcal file, necessary for computing spot m
   gpi = Python.Import('gpi')
   output = gpi.gpi_pipeline_generate_spot_model(c_file, im, indq, im_std)
   offsets_flat = output[0]
-  offsets = REFORM(offsets_flat, [2,2,11])
   other_flat = output[1]
-  other = REFORM(other_flat, [1,2,11])
   zernikes_flat = output[2]
-  zernikes = REFORM(zernikes_flat, [7,2,11])
-
+  n_poly = size(other_flat)[0]/2
+  offsets = reform(offsets_flat, [2, 2, n_poly])
+  other = reform(other_flat, [1, 2, n_poly])
+  zernikes = reform(zernikes_flat, [7, 2, n_poly])
 
   ;; Set keywords for outputting files into the Calibrations DB
   backbone -> set_keyword, "FILETYPE", "Polarimetry Spot Model Cal File"
