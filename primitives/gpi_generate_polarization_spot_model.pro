@@ -69,7 +69,6 @@ calfiletype = 'polcal' ; for loading polcal file, necessary for computing spot m
   other = reform(other_flat, [1, 2, n_poly])
   zernikes = reform(zernikes_flat, [7, 2, n_poly])
 
-
   ;; Set keywords for outputting files into the Calibrations DB
   backbone -> set_keyword, "FILETYPE", "Polarimetry Spot Model Cal File"
   backbone -> set_keyword,  "ISCALIB", "YES", 'This is a reduced calibration file of some type.'
