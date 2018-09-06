@@ -113,8 +113,12 @@ function gpi_assemble_polarization_cube, DataSet, Modules, Backbone
     ;; Extract using forward modeling
     gpi = Python.Import('gpi')
     output = gpi.gpi_pipeline_extract(input, im_uncert^2, indq, polspotmodel.offsets, polspotmodel.other, polspotmodel.zernikes, polcal.filename)
-    polcube = output[0]
-    dqcube = output[1]
+    polcube_flat = output[0]
+    dqcube_flat = output[1]
+	shape_1 = output[2]
+	shape_2 = output[3]
+    polcube = reform(polcube_flat, [shape_2, shape_1, 2])
+    dqcube = reform(dqcube_flat, [shape_2, shape_1, 2])
 
   endif else begin              ; BOX or PSF
     indices, input, xx, yy
